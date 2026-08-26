@@ -101,7 +101,10 @@
 
   <div class="row">
     <button id="btnCheck" class="ghost">✅ Corregir test</button>
-    <button id="btnSend" disabled>📧 Enviar por correo web</button>
+    <button id="btnSend" disabled>📧 Enviar (correo web)</button>
+  </div>
+  <div class="row" style="margin-top:8px">
+    <button id="btnSendMail" disabled class="ghost">📬 Enviar (Outlook / escritorio)</button>
   </div>
   <div class="row" style="margin-top:8px">
     <button id="btnCopy" class="ghost hidden">📋 Copiar JSON (si el email no se abre)</button>
@@ -245,6 +248,7 @@
   function updateSend(){
     var ready = Object.keys(answers).length >= QS.length;
     document.getElementById('btnSend').disabled = !ready;
+    document.getElementById('btnSendMail').disabled = !ready;
   }
 
   function send(){
@@ -260,6 +264,21 @@
     copia.classList.remove('hidden');
     window.open(url, '_blank');
     toast('📧 Se ha abierto tu correo web. Solo pulsa ENVIAR.');
+  }
+
+  function sendMail(){
+    var p = buildPayload();
+    var json = JSON.stringify(p, null, 2);
+    var subject = 'Respuesta Test Píldora ' + PILDORA + ' — ' + p.nombre;
+    var body = 'Hola Secretaria, estas son mis respuestas:\n\n' + json +
+               '\n\n(Píldora ' + PILDORA + ' de 10 · Curso Agente de IA)';
+    // Cliente de escritorio (Outlook, Thunderbird...) vía mailto:
+    var url = 'mailto:secretaria.mb360@outlook.com?subject=' +
+              encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    var copia = document.getElementById('btnCopy');
+    copia.classList.remove('hidden');
+    window.location.href = url;
+    toast('📬 Se ha abierto tu programa de correo. Solo pulsa ENVIAR.');
   }
 
   function copy(){
@@ -286,6 +305,7 @@
 
   document.getElementById('btnCheck').addEventListener('click', check);
   document.getElementById('btnSend').addEventListener('click', send);
+  document.getElementById('btnSendMail').addEventListener('click', sendMail);
   document.getElementById('btnCopy').addEventListener('click', copy);
   render();
 })();
