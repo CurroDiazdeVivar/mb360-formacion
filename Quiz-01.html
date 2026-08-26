@@ -101,7 +101,7 @@
 
   <div class="row">
     <button id="btnCheck" class="ghost">✅ Corregir test</button>
-    <button id="btnSend" disabled>📧 Enviar mis respuestas</button>
+    <button id="btnSend" disabled>📧 Enviar por correo web</button>
   </div>
   <div class="row" style="margin-top:8px">
     <button id="btnCopy" class="ghost hidden">📋 Copiar JSON (si el email no se abre)</button>
@@ -253,12 +253,13 @@
     var subject = 'Respuesta Test Píldora ' + PILDORA + ' — ' + p.nombre;
     var body = 'Hola Secretaria, estas son mis respuestas:\n\n' + json +
                '\n\n(Píldora ' + PILDORA + ' de 10 · Curso Agente de IA)';
-    var url = 'mailto:secretaria.mb360@outlook.com?subject=' +
+    // Abre Gmail web (o tu correo web) con todo pre-llenado — no necesita Outlook instalado
+    var url = 'https://mail.google.com/mail/?view=cm&fs=1&to=secretaria.mb360@outlook.com&su=' +
               encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
     var copia = document.getElementById('btnCopy');
     copia.classList.remove('hidden');
-    window.location.href = url;
-    toast('📧 Se ha abierto tu correo. Solo pulsa ENVIAR.');
+    window.open(url, '_blank');
+    toast('📧 Se ha abierto tu correo web. Solo pulsa ENVIAR.');
   }
 
   function copy(){
