@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎧 Píldora 4 — MCP: el USB-C de la IA (audio)</title>
+<style>
+  :root{--bg:#0a0a0f;--card:#1a1a2e;--line:#2a2a4a;--fg:#e8e8f0;--muted:#9a9ab0;--accent:#00d4ff;--accent2:#7b2ff7}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--fg);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;
+    background-image:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(123,47,247,.18),transparent),radial-gradient(ellipse 60% 40% at 90% 110%,rgba(0,212,255,.10),transparent)}
+  .wrap{max-width:520px;width:100%;text-align:center}
+  .badge{display:inline-block;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0a0a0f;font-weight:700;font-size:11px;letter-spacing:.08em;padding:4px 12px;border-radius:999px;text-transform:uppercase}
+  h1{font-size:25px;margin:16px 0 4px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--muted);font-size:14px;margin-bottom:24px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:14px}
+  .icon{font-size:48px;margin-bottom:10px}
+  audio{width:100%;margin:8px 0 4px;outline:none}
+  .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+  .btn{flex:1;min-width:140px;display:inline-block;padding:12px 16px;border-radius:12px;text-decoration:none;font-weight:700;font-size:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0a0a0f;transition:transform .1s}
+  .btn:hover{transform:translateY(-1px)}
+  .btn.ghost{background:var(--card);color:var(--fg);border:1px solid var(--line)}
+  .foot{margin-top:18px;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <span class="badge">🎓 MB360 Academy · Píldora 4/10</span>
+    <h1>MCP: el USB-C de la IA</h1>
+    <div class="sub">Audio · 2 minutos · Curso Agente de IA</div>
+
+    <div class="card">
+      <div class="icon">🎧</div>
+      <p style="color:var(--muted);font-size:14px;margin-bottom:10px;">La lección narrada, para escuchar donde quieras:</p>
+      <audio controls preload="metadata" src="Audio-Pildora-04.m4a"></audio>
+      <p style="color:var(--muted);font-size:12px;margin-top:8px;">💡 Consejo: escúchalo en el trayecto y luego haz el test.</p>
+    </div>
+
+    <div class="row">
+      <a class="btn ghost" href="Infografia-04.jpg">🖼️ Ver infografía</a>
+      <a class="btn" href="Quiz-04.html">✅ Hacer el test</a>
+    </div>
+
+    <div class="card" style="text-align:left">
+      <p style="margin:0 0 10px 0;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent2);font-weight:700;">📚 Historial de píldoras</p>
+      <p style="margin:0 0 8px 0;font-size:14px;line-height:1.6;color:var(--fg);">
+        <b>Píldora 1</b> · ¿Qué es un Agente de IA? —
+        <a href="audio-pildora-01.html" style="color:var(--accent);text-decoration:none;">🎧 Audio</a> ·
+        <a href="Infografia-01.jpg" style="color:var(--accent);text-decoration:none;">🖼️ Infografía</a>
+      </p>
+      <p style="margin:0 0 8px 0;font-size:14px;line-height:1.6;color:var(--fg);">
+        <b>Píldora 2</b> · Arquitectura del sistema de IA —
+        <a href="audio-pildora-02.html" style="color:var(--accent);text-decoration:none;">🎧 Audio</a> ·
+        <a href="Infografia-02.jpg" style="color:var(--accent);text-decoration:none;">🖼️ Infografía</a>
+      </p>
+      <p style="margin:0 0 8px 0;font-size:14px;line-height:1.6;color:var(--fg);">
+        <b>Píldora 3</b> · RAG: el agente lee antes de responder —
+        <a href="audio-pildora-03.html" style="color:var(--accent);text-decoration:none;">🎧 Audio</a> ·
+        <a href="Infografia-03.jpg" style="color:var(--accent);text-decoration:none;">🖼️ Infografía</a>
+      </p>
+      <p style="margin:0;font-size:14px;line-height:1.6;color:var(--fg);">
+        <b>Píldora 4</b> · MCP: el USB-C de la IA —
+        <a href="audio-pildora-04.html" style="color:var(--accent);text-decoration:none;">🎧 Audio</a> ·
+        <a href="Infografia-04.jpg" style="color:var(--accent);text-decoration:none;">🖼️ Infografía</a>
+      </p>
+      <p style="margin:8px 0 0 0;font-size:12px;color:var(--muted);">Curso completo: <a href="index.html" style="color:var(--muted);">mb360-formacion.github.io</a></p>
+    </div>
+
+    <div class="foot">Secretaria MB360 🤖 · Curso Agente de IA · Píldora semanal</div>
+  </div>
+</body>
+</html>

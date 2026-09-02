@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎓 Píldora 4 — MCP: el USB-C de la IA</title>
+<style>
+  :root{
+    --bg:#0a0a0f; --card:#1a1a2e; --card2:#14141f; --line:#2a2a4a;
+    --fg:#e8e8f0; --muted:#9a9ab0; --accent:#00d4ff; --accent2:#7b2ff7;
+    --ok:#2ecc71; --ko:#e74c3c;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:var(--bg); color:var(--fg);
+    font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    min-height:100vh; padding:24px 16px 48px;
+    background-image:radial-gradient(ellipse 80% 50% at 50% -10%, rgba(123,47,247,.18), transparent),
+                     radial-gradient(ellipse 60% 40% at 90% 110%, rgba(0,212,255,.10), transparent);
+  }
+  .wrap{max-width:720px;margin:0 auto}
+  .badge{
+    display:inline-block;background:linear-gradient(135deg,var(--accent),var(--accent2));
+    color:#0a0a0f;font-weight:700;font-size:12px;letter-spacing:.08em;
+    padding:4px 12px;border-radius:999px;text-transform:uppercase;
+  }
+  h1{
+    font-size:clamp(22px,4vw,30px);margin:14px 0 4px;line-height:1.2;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .sub{color:var(--muted);font-size:14px;margin-bottom:24px}
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:20px;margin-bottom:16px;
+  }
+  label.q{
+    display:block;background:var(--card2);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:8px 0;cursor:pointer;
+    transition:border-color .15s, background .15s;font-size:15px;
+  }
+  label.q:hover{border-color:var(--accent)}
+  label.q.correct{border-color:var(--ok);background:rgba(46,204,113,.10)}
+  label.q.wrong{border-color:var(--ko);background:rgba(231,76,60,.10)}
+  label.q input{margin-right:10px;accent-color:var(--accent)}
+  .qtitle{font-weight:600;margin-bottom:4px;font-size:16px}
+  .explain{display:none;font-size:13px;color:var(--muted);margin-top:6px;padding:8px 12px;background:rgba(0,0,0,.25);border-radius:8px}
+  .explain.show{display:block}
+  .explain b{color:var(--accent)}
+  .score{
+    display:none;text-align:center;padding:18px;border-radius:14px;margin:16px 0;
+    background:linear-gradient(135deg,rgba(0,212,255,.12),rgba(123,47,247,.12));
+    border:1px solid var(--line);
+  }
+  .score.show{display:block}
+  .score .num{font-size:38px;font-weight:800}
+  .score .msg{color:var(--muted);font-size:14px;margin-top:4px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+  button{
+    flex:1;min-width:200px;padding:14px 18px;border:none;border-radius:12px;
+    font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0a0a0f;
+    transition:transform .1s, opacity .2s;
+  }
+  button:hover{transform:translateY(-1px)}
+  button:disabled{opacity:.4;cursor:not-allowed;transform:none}
+  button.ghost{background:var(--card2);color:var(--fg);border:1px solid var(--line)}
+  input[type=text]{
+    width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--line);
+    background:var(--card2);color:var(--fg);font-family:inherit;font-size:15px;
+  }
+  input[type=text]:focus{outline:none;border-color:var(--accent)}
+  .foot{margin-top:28px;text-align:center;color:var(--muted);font-size:12px}
+  .toast{
+    position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);
+    background:var(--card);border:1px solid var(--accent);color:var(--fg);
+    padding:12px 20px;border-radius:10px;font-size:14px;opacity:0;
+    transition:transform .3s, opacity .3s;z-index:9;max-width:90vw;
+  }
+  .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="badge">🎓 MB360 Academy · Píldora 4/10</span>
+  <h1>MCP: el USB-C de la IA</h1>
+  <div class="sub">Test rápido · 4 preguntas · 2 minutos · Sin nota, solo para ti</div>
+
+  <div class="card">
+    <div style="font-weight:600;margin-bottom:8px">Tu nombre</div>
+    <input type="text" id="nombre" placeholder="Escribe tu nombre" autocomplete="name">
+  </div>
+
+  <div id="quiz"></div>
+
+  <div class="score" id="score">
+    <div class="num" id="scoreNum">—</div>
+    <div class="msg" id="scoreMsg"></div>
+  </div>
+
+  <div class="row">
+    <button id="btnCheck" class="ghost">✅ Corregir test</button>
+    <button id="btnSend" disabled>📧 Enviar (correo web)</button>
+  </div>
+  <div class="row" style="margin-top:8px">
+    <button id="btnSendMail" disabled class="ghost">📬 Enviar (Outlook / escritorio)</button>
+  </div>
+  <div class="row" style="margin-top:8px">
+    <button id="btnCopy" class="ghost hidden">📋 Copiar JSON (si el email no se abre)</button>
+  </div>
+
+  <div class="foot">Secretaria MB360 🤖 · Curso Agente de IA · La respuesta queda registrada en tu progreso</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  'use strict';
+  var PILDORA = 4;
+  var QS = [
+    {
+      t:"1. ¿Qué significa MCP?",
+      o:["Un programa de edición de vídeo",
+         "Un estándar que permite al agente conectarse a herramientas externas (Gmail, Drive, bases de datos...)",
+         "Una marca de ordenadores"],
+      c:1,
+      e:"MCP (Model Context Protocol) es el 'enchufe universal' de la IA: un estándar para que el agente se conecte a cualquier herramienta sin aprender un idioma distinto por cada una."
+    },
+    {
+      t:"2. ¿Qué problema resuelve MCP?",
+      o:["Que el agente no se canse de trabajar",
+         "Que cada herramienta tenga su propio enchufe: sin estándar, habría que aprender un idioma nuevo por cada una",
+         "Que los emails se envíen más rápido"],
+      c:1,
+      e:"Antes, conectar el agente a Gmail, a Drive o a una base de datos exigía una integración a medida por cada herramienta. Con MCP, todas hablan el mismo idioma."
+    },
+    {
+      t:"3. ¿Qué puede hacer el agente gracias a un MCP de Gmail?",
+      o:["Solo leer titulares de noticias",
+         "Leer, redactar y enviar correos desde la cuenta de la agencia",
+         "Dibujar logos"],
+      c:1,
+      e:"Un MCP de Gmail le da al agente acceso real a la bandeja: puede buscar correos, redactar respuestas y enviarlos. El 'enchufe' conecta al agente con la herramienta."
+    },
+    {
+      t:"4. ¿Por qué MCP es como un USB-C?",
+      o:["Porque es pequeño y bonito",
+         "Porque un solo estándar sirve para conectar muchas herramientas distintas, sin cables especiales por cada una",
+         "Porque solo funciona con móviles"],
+      c:1,
+      e:"El USB-C es un estándar que conecta móviles, portátiles y tablets con el mismo cable. MCP hace lo mismo con las herramientas del agente: un estándar, muchas conexiones."
+    }
+  ];
+
+  var answers = {};
+  var checked = false;
+
+  function esc(s){
+    return String(s).replace(/[&<>"']/g, function(m){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];
+    });
+  }
+
+  function render(){
+    var html = '';
+    QS.forEach(function(q, i){
+      html += '<div class="card"><div class="qtitle">' + esc(q.t) + '</div>';
+      q.o.forEach(function(op, j){
+        var letter = String.fromCharCode(97 + j);
+        html += '<label class="q" data-q="' + i + '" data-o="' + j + '">' +
+                '<input type="radio" name="q' + i + '" value="' + letter + '">' +
+                '<b>' + letter.toUpperCase() + ')</b> ' + esc(op) + '</label>';
+      });
+      html += '<div class="explain" id="ex' + i + '"></div></div>';
+    });
+    document.getElementById('quiz').innerHTML = html;
+
+    document.querySelectorAll('input[type=radio]').forEach(function(inp){
+      inp.addEventListener('change', function(){
+        var q = parseInt(this.name.replace('q',''), 10);
+        answers[q] = this.value;
+        if (checked) { clearFeedback(); checked = false; }
+        updateSend();
+      });
+    });
+  }
+
+  function clearFeedback(){
+    document.querySelectorAll('label.q').forEach(function(l){ l.classList.remove('correct','wrong'); });
+    document.querySelectorAll('.explain').forEach(function(e){ e.classList.remove('show'); });
+    document.getElementById('score').classList.remove('show');
+  }
+
+  function check(){
+    var nombre = document.getElementById('nombre').value.trim();
+    if (!nombre) { toast('✍️ Escribe tu nombre antes de corregir'); return; }
+    if (Object.keys(answers).length < QS.length) { toast('Te faltan preguntas por responder'); return; }
+
+    var ok = 0;
+    QS.forEach(function(q, i){
+      var sel = answers[i];
+      var correct = String.fromCharCode(97 + q.c);
+      var label = document.querySelector('label.q[data-q="' + i + '"][data-o="' + q.c + '"]');
+      label.classList.add('correct');
+      if (sel === correct) {
+        ok++;
+      } else {
+        var wrong = document.querySelector('label.q[data-q="' + i + '"][data-o="' + (sel.charCodeAt(0) - 97) + '"]');
+        if (wrong) wrong.classList.add('wrong');
+      }
+      var ex = document.getElementById('ex' + i);
+      ex.innerHTML = (sel === correct ? '✅ ' : '❌ ') + '<b>Respuesta correcta: ' + correct.toUpperCase() + '.</b> ' + esc(q.e);
+      ex.classList.add('show');
+    });
+
+    checked = true;
+    var score = document.getElementById('score');
+    document.getElementById('scoreNum').textContent = ok + ' / ' + QS.length;
+    document.getElementById('scoreMsg').textContent =
+      ok === QS.length ? '🏆 ¡Perfecto! Dominas la píldora.' :
+      ok >= QS.length - 1 ? '👏 Muy bien. Repasa la explicación de la que fallaste y listo.' :
+      '📖 Repasa la lección y vuelve a intentarlo cuando quieras.';
+    score.classList.add('show');
+    updateSend();
+  }
+
+  function buildPayload(){
+    var nombre = document.getElementById('nombre').value.trim() || 'Anónimo';
+    var resp = {};
+    var aciertos = 0;
+    QS.forEach(function(q, i){
+      var sel = answers[i] || '-';
+      resp[i + 1] = sel;
+      if (sel === String.fromCharCode(97 + q.c)) aciertos++;
+    });
+    return {
+      pildora: PILDORA,
+      nombre: nombre,
+      fecha: new Date().toISOString().slice(0,10),
+      respuestas: resp,
+      aciertos: aciertos,
+      total: QS.length
+    };
+  }
+
+  function updateSend(){
+    var ready = Object.keys(answers).length >= QS.length;
+    document.getElementById('btnSend').disabled = !ready;
+    document.getElementById('btnSendMail').disabled = !ready;
+  }
+
+  function send(){
+    var p = buildPayload();
+    var json = JSON.stringify(p, null, 2);
+    var subject = 'Respuesta Test Píldora ' + PILDORA + ' — ' + p.nombre;
+    var body = 'Hola Secretaria, estas son mis respuestas:\n\n' + json +
+               '\n\n(Píldora ' + PILDORA + ' de 10 · Curso Agente de IA)';
+    // Abre Gmail web (o tu correo web) con todo pre-llenado — no necesita Outlook instalado
+    var url = 'https://mail.google.com/mail/?view=cm&fs=1&to=secretaria.mb360@outlook.com&su=' +
+              encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    var copia = document.getElementById('btnCopy');
+    copia.classList.remove('hidden');
+    window.open(url, '_blank');
+    toast('📧 Se ha abierto tu correo web. Solo pulsa ENVIAR.');
+  }
+
+  function sendMail(){
+    var p = buildPayload();
+    var json = JSON.stringify(p, null, 2);
+    var subject = 'Respuesta Test Píldora ' + PILDORA + ' — ' + p.nombre;
+    var body = 'Hola Secretaria, estas son mis respuestas:\n\n' + json +
+               '\n\n(Píldora ' + PILDORA + ' de 10 · Curso Agente de IA)';
+    // Cliente de escritorio (Outlook, Thunderbird...) vía mailto:
+    var url = 'mailto:secretaria.mb360@outlook.com?subject=' +
+              encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    var copia = document.getElementById('btnCopy');
+    copia.classList.remove('hidden');
+    window.location.href = url;
+    toast('📬 Se ha abierto tu programa de correo. Solo pulsa ENVIAR.');
+  }
+
+  function copy(){
+    var p = buildPayload();
+    var json = JSON.stringify(p, null, 2);
+    function done(){ toast('📋 JSON copiado. Pégalo en un email a secretaria.mb360@outlook.com'); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(json).then(done, function(){ fallbackCopy(json); });
+    } else { fallbackCopy(json); }
+  }
+
+  function fallbackCopy(text){
+    var ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(); } catch(e) { toast('No se pudo copiar'); }
+    document.body.removeChild(ta);
+  }
+
+  function toast(msg){
+    var t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(function(){ t.classList.remove('show'); }, 3500);
+  }
+
+  document.getElementById('btnCheck').addEventListener('click', check);
+  document.getElementById('btnSend').addEventListener('click', send);
+  document.getElementById('btnSendMail').addEventListener('click', sendMail);
+  document.getElementById('btnCopy').addEventListener('click', copy);
+  render();
+})();
+</script>
+</body>
+</html>
